@@ -27,20 +27,22 @@ jobs:
       - name: Set up Kind Cluster
         uses: helm/kind-action@v1.8.0
 
-      - name: Deploy to Kubernetes and Verify
+      - name: Verify Deployment in Kubernetes Cluster
         run: |
-          echo "Checking cluster status..."
-          kubectl cluster-info
-          
-          echo "Applying Kubernetes manifests..."
+          echo "Applying manifests..."
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
           kubectl apply -f k8s/ingress.yaml
           
-          echo "Waiting for deployment to roll out..."
+          echo "Waiting for pods to be ready..."
           kubectl rollout status deployment/wisecow-deployment --timeout=60s
           
-          echo "Verifying cluster resources..."
+          echo "Checking active pods and services..."
           kubectl get pods
           kubectl get services
           kubectl get ingress
+          
+          echo "Running smoke test inside the cluster..."
+          kubectl port-forward svc/wisecow-service 4499:4499 &
+          sleep 3
+          curl -I http://localhost:4499

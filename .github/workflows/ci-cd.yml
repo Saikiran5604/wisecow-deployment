@@ -1,22 +1,25 @@
-FROM ubuntu:22.04
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    fortune-mod \
-    cowsay \
-    netcat-openbsd \
-    fortunes && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+name: CI/CD Pipeline
 
+on:
+  push:
+    branches: [ "main" ]
 
-ENV PATH="/usr/games:$PATH"
-WORKDIR /app
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-COPY wisecow.sh /app/wisecow.sh
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-RUN chmod +x /app/wisecow.sh
-
-EXPOSE 4499
-
-CMD ["./wisecow.sh"]
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: saikiranreddy5604/wisecow:latest

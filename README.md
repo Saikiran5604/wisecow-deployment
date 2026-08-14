@@ -20,6 +20,10 @@ This repository automates the build, test, and deployment lifecycle of the **Wis
 ### Overview
 A robust health-check automation script was developed to continuously monitor the availability and uptime of the Wisecow web application endpoint. It queries the endpoint, validates the HTTP response code (`200 OK`), and handles downtime or connection errors gracefully.
 
+---
+
+## Problem Statement 3: Zero-Trust KubeArmor Policy
+
 ### Overview
 To secure the Kubernetes workload against unauthorized container privilege escalations and system access, a zero-trust security policy was implemented using KubeArmor (defined in `k8s/kubearmor-policy.yaml`).
 
